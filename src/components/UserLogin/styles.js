@@ -20,10 +20,15 @@ const style = StyleSheet.create({
         alignSelf: 'center', 
         fontSize: 14, 
         fontWeight: 'bold',
-        margin: 10
+        margin: 10,
+        width: 150
     },
     orText: {
-        display: 'flex',
+        color: '#A0A0A0',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom: -10,
+        paddingHorizontal: 30,
         alignSelf: 'center',
         backgroundColor:'white',
         margin: 'auto'

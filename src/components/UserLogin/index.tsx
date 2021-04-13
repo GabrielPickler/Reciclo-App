@@ -69,11 +69,13 @@ const UserLogin = () => {
                         <Layout style={styles.line}> 
                             <Text style={styles.orText}>OR</Text>
                         </Layout>
-                        <Text 
-                            style={styles.signUpText}
-                            status='primary'> 
-                            Sign up!
-                        </Text>
+                        <Button
+                        size='small'
+                        appearance='outline' 
+                        style={styles.signUpText}
+                        status='primary'> 
+                        SIGN UP!
+                        </Button>
                     </ScrollView>
                 )}
         </Formik>
