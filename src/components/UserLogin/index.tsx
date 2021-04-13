@@ -6,7 +6,7 @@ import styles from './styles'
 import { Button, Input, Text, Layout, Autocomplete } from '@ui-kitten/components';
 import { Formik  } from 'formik';
 import * as yup from 'yup';
-import { PropsService } from '@ui-kitten/components/devsupport';
+import { Actions } from 'react-native-router-flux'
 
 interface Values {
     username: string,
@@ -16,8 +16,8 @@ interface Values {
 const UserLogin = () => {
     const [loading, setLoading] = useState(false)
     const schemaValidation = yup.object({
-        username: yup.string().required('O campo usuário é obrigatório!'),
-        password: yup.string().required('O campo senha é obrigatório!')
+        username: yup.string().required('Username is required!'),
+        password: yup.string().required('Password is required!')
     })
 
     const handleSubmit = (values : Values) => {
@@ -34,9 +34,12 @@ const UserLogin = () => {
                     <ScrollView>
                         <Input
                         style={styles.input}
+                        size='medium'
                         label='Username' 
                         placeholder='Username'
                         value={props.values.username}
+                        onBlur={props.handleBlur('username')}
+                        onChangeText={props.handleChange('username')}
                         status={props.errors.username ? 'danger' : 'basic'}
                         />
 
@@ -48,8 +51,11 @@ const UserLogin = () => {
                         style={styles.input} 
                         placeholder='Password'
                         label='Password'
+                        size='medium'
                         secureTextEntry={true}
                         status={props.errors.password ? 'danger' : 'basic'}
+                        onChangeText={props.handleChange('password')}
+                        onBlur={props.handleBlur('password')}
                         value={props.values.password}/>
 
                         { props.errors.password ? 
@@ -62,7 +68,7 @@ const UserLogin = () => {
                         disabled={loading}
                         accessoryLeft={() => <ButtonSpinner isLoading={loading}/>}
                         onPress={props.handleSubmit}
-                        style={{width: 150, alignSelf: 'center', marginTop: 10}}
+                        style={{width: 150, alignSelf: 'center', marginTop: 30}}
                         >
                             CONTINUE
                         </Button>
@@ -73,7 +79,8 @@ const UserLogin = () => {
                         size='small'
                         appearance='outline' 
                         style={styles.signUpText}
-                        status='primary'> 
+                        status='primary'
+                        onPress={() => Actions.replace('register')}> 
                         SIGN UP!
                         </Button>
                     </ScrollView>
