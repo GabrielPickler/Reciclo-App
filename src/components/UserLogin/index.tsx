@@ -80,7 +80,7 @@ const UserLogin = () => {
                         appearance='outline' 
                         style={styles.signUpText}
                         status='primary'
-                        onPress={() => Actions.replace('register')}> 
+                        onPress={() => Actions.push('register')}> 
                         SIGN UP!
                         </Button>
                     </ScrollView>
