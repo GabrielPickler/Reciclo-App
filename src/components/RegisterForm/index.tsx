@@ -1,80 +1,170 @@
-import { Input, Layout, Text, Button } from "@ui-kitten/components"
-import { Formik } from "formik";
+import { Input, Layout, Text, Button } from '@ui-kitten/components';
+import { Formik } from 'formik';
 import * as yup from 'yup';
-import styles from './styles'
-import ButtonSpinner from '../ButtonSpinner'
+import styles from './styles';
+import ButtonSpinner from '../ButtonSpinner';
+import api from '../../../Axios.config';
 
 import React, { useState } from 'react';
+import { Actions } from 'react-native-router-flux';
 
 interface Form {
-    name: String,
-    username: String,
-    email: String,
-    password: String,
-    confirmPassword: String
+  name: String;
+  username: String;
+  email: String;
+  password: String;
+  confirmPassword: String;
 }
 
 const RegisterForm = () => {
-    const [loading, setLoading] = useState(false)
-    const schemaValidation = yup.object({
-        name: yup.string().required('Name is required!').trim(),
-        username: yup.string().required('Username is required!').trim(),
-        password: yup.string().required('Password is required!').trim(),
-        email: yup.string().email().required('Email is required!').trim(),
-        confirmPassword: yup
-        .string()
-        .trim()
-        .required('Password is required!')
-        .test('password-do-not-match', 'Passwords do not match!', function (value) {
-            let { password } = this.parent;
-            return value === password
-        })
-    })
+  const [loading, setLoading] = useState(false);
+  const schemaValidation = yup.object({
+    name: yup.string().required('Name is required!').trim(),
+    username: yup.string().required('Username is required!').trim(),
+    password: yup
+      .string()
+      .required('Password is required!')
+      .trim()
+      .test(
+        'password-do-not-match',
+        'Passwords do not match!',
+        function (value) {
+          let { confirmPassword } = this.parent;
+          return value === confirmPassword;
+        },
+      ),
+    email: yup
+      .string()
+      .email('Email must be a valid email!')
+      .required('Email is required!')
+      .trim(),
+    confirmPassword: yup
+      .string()
+      .trim()
+      .required('Password is required!')
+      .test(
+        'password-do-not-match',
+        'Passwords do not match!',
+        function (value) {
+          let { password } = this.parent;
+          return value === password;
+        },
+      ),
+  });
 
-    return (
-        <Formik 
-        initialValues={{name: '', username: '', password: '', confirmPassword: '', email: ''}}
-        onSubmit={()=>console.log('')}
-        validationSchema={schemaValidation}>
-            {(props) => (
-                    <Layout style={styles.containerForm}>
-                        <Text style={styles.header}>Sign in</Text>
+  const handleSubmit = async (values: Form) => {
+    setLoading(true);
+    try {
+      const response = await api.post('/useraccount', JSON.stringify(values));
+      Actions.push('login');
+    } catch (error) {
+      console.log(error.response);
+      console.log(error);
+      console.log(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                        <Input 
-                        style={{marginBottom: 10}}
-                        label='Name'/>
+  return (
+    <Formik
+      initialValues={{
+        name: '',
+        username: '',
+        password: '',
+        confirmPassword: '',
+        email: '',
+      }}
+      onSubmit={values => handleSubmit(values)}
+      validationSchema={schemaValidation}
+      validateOnBlur={false}>
+      {props => (
+        <Layout style={styles.containerForm}>
+          <Text style={styles.header}>Sign up</Text>
 
-                        <Input 
-                        style={{marginBottom: 10}}
-                        label='Username'/>
+          <Input
+            label="Name"
+            value={props.values.name}
+            onBlur={props.handleBlur('name')}
+            onChangeText={props.handleChange('name')}
+            status={props.errors.name ? 'danger' : 'basic'}
+          />
 
-                        <Input 
-                        style={{marginBottom: 10}}
-                        label='Email'/>
+          {props.errors.name ? (
+            <Text status="danger" style={styles.error}>
+              {props.errors.name}
+            </Text>
+          ) : null}
 
-                        <Input 
-                        style={{marginBottom: 10}}
-                        label='Password'/>
+          <Input
+            value={props.values.username}
+            onBlur={props.handleBlur('username')}
+            onChangeText={props.handleChange('username')}
+            status={props.errors.username ? 'danger' : 'basic'}
+            label="Username"
+          />
 
-                        <Input 
-                        style={{marginBottom: 10}}
-                        label='Confirm Password'/>
+          {props.errors.name ? (
+            <Text status="danger" style={styles.error}>
+              {props.errors.username}
+            </Text>
+          ) : null}
 
-                        <Button 
-                        size='small'
-                        appearance='outline'
-                        disabled={loading}
-                        accessoryLeft={() => <ButtonSpinner isLoading={loading}/>}
-                        style={{width: 150, alignSelf: 'center', marginTop: 20}}>
-                            SIGN IN
-                        </Button>
+          <Input
+            label="Email"
+            value={props.values.email}
+            onBlur={props.handleBlur('email')}
+            onChangeText={props.handleChange('email')}
+            status={props.errors.email ? 'danger' : 'basic'}
+          />
 
-                    </Layout>
-                )
-            }
-            
-        </Formik>
-    )
-}
+          {props.errors.email ? (
+            <Text status="danger" style={styles.error}>
+              {props.errors.email}
+            </Text>
+          ) : null}
 
-export default RegisterForm
+          <Input
+            label="Password"
+            value={props.values.password}
+            onBlur={props.handleBlur('password')}
+            onChangeText={props.handleChange('password')}
+            status={props.errors.password ? 'danger' : 'basic'}
+          />
+
+          {props.errors.password ? (
+            <Text status="danger" style={styles.error}>
+              {props.errors.password}
+            </Text>
+          ) : null}
+
+          <Input
+            label="Confirm Password"
+            value={props.values.confirmPassword}
+            onBlur={props.handleBlur('confirmPassword')}
+            onChangeText={props.handleChange('confirmPassword')}
+            status={props.errors.confirmPassword ? 'danger' : 'basic'}
+          />
+
+          {props.errors.confirmPassword ? (
+            <Text status="danger" style={styles.error}>
+              {props.errors.confirmPassword}
+            </Text>
+          ) : null}
+
+          <Button
+            size="small"
+            appearance="outline"
+            disabled={loading}
+            onPress={props.handleSubmit}
+            accessoryLeft={() => <ButtonSpinner isLoading={loading} />}
+            style={{ width: 150, alignSelf: 'center', marginTop: 20 }}>
+            SIGN IN
+          </Button>
+        </Layout>
+      )}
+    </Formik>
+  );
+};
+
+export default RegisterForm;
