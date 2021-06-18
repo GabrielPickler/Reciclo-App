@@ -1,14 +1,16 @@
-import { Input, Layout, Text, Button } from '@ui-kitten/components';
-import { Formik } from 'formik';
-import * as yup from 'yup';
-import styles from './styles';
-import ButtonSpinner from '../ButtonSpinner';
-import api from '../../../Axios.config';
-
 import React, { useState } from 'react';
 import { Actions } from 'react-native-router-flux';
 
-interface Form {
+import { Input, Layout, Text, Button } from '@ui-kitten/components';
+import { Formik } from 'formik';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as yup from 'yup';
+
+import styles from './styles';
+import ButtonSpinner from '../ButtonSpinner';
+import { userRegister } from '../../services/UserServices';
+
+export interface RegisterForm {
   name: String;
   username: String;
   email: String;
@@ -52,10 +54,12 @@ const RegisterForm = () => {
       ),
   });
 
-  const handleSubmit = async (values: Form) => {
+  const handleSubmit = async (values: RegisterForm) => {
     setLoading(true);
     try {
-      const response = await api.post('/useraccount', JSON.stringify(values));
+      const response = await userRegister(values);
+      await AsyncStorage.setItem('@RecicloApp:pushToken', response.data.token);
+      //TODO: Enviar para o menu
       Actions.push('login');
     } catch (error) {
       console.log(error.response);

@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import ButtonSpinner from '../../components/ButtonSpinner';
 import { ScrollView } from 'react-native';
-import styles from './styles';
 
 import { Button, Input, Text, Layout } from '@ui-kitten/components';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { Actions } from 'react-native-router-flux';
-import api from '../../../Axios.config';
 
-interface Values {
+import styles from './styles';
+import ButtonSpinner from '../../components/ButtonSpinner';
+import { userLogin } from '../../services/UserServices';
+
+export interface UserLogin {
   email: string;
   password: string;
 }
@@ -21,10 +23,11 @@ const UserLogin = () => {
     password: yup.string().required('Password is required!'),
   });
 
-  const handleSubmit = async (values: Values) => {
+  const handleSubmit = async (values: UserLogin) => {
     try {
       setLoading(true);
-      await api.post('/useraccount/session', values);
+      const response = await userLogin(values);
+      await AsyncStorage.setItem('@RecicloApp:pushToken', response.data.token);
       Actions.push('register');
     } catch (error) {
       console.log(error.response);
@@ -38,7 +41,7 @@ const UserLogin = () => {
   return (
     <Formik
       initialValues={{ email: '', password: '' }}
-      onSubmit={(values: Values) => handleSubmit(values)}
+      onSubmit={(values: UserLogin) => handleSubmit(values)}
       validationSchema={schemaValidation}
       validateOnBlur={false}>
       {props => (
